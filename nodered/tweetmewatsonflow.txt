@@ -1,0 +1,184 @@
+[
+   {
+      "id":"ee089087.053a4",
+      "type":"function",
+      "name":"Get Tweets Using Twit",
+      "func":"var Twit = context.global.twitModule;\n\nvar tweet = new Twit ({\n    consumer_key: 'YOUR CONSUMER-KEY',\n    consumer_secret: 'YOUR CONSUMER-SECRET',\n    access_token: 'YOUR TOKEN',\n    access_token_secret: 'YOUR TOKEN SECRET'\n});\n\nvar handle = msg.payload;\n\nvar options = {\n    screen_name: handle,\n    count: 200,\n    include_rts: false\n};\n\nvar tweets = [];\n\ntweet.get('statuses/user_timeline', options, function(err, data) {\n\nif (err) {\nnode.log(\"Error: \"+err);\n}\n\nnode.log(data.length);\n\nfor (var i = 0; i < data.length; i++) {\n    tweets.push(data[i].text);\n}\n\ntweets = tweets.join(' ');\n\nnode.send({payload:{number:data.length,feed:tweets,usr:handle}});\n\n});\n",
+      "outputs":1,
+      "noerr":0,
+      "x":205,
+      "y":312,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "cf736aae.3894e"
+         ]
+      ]
+   },
+   {
+      "id":"4cc2c881.b2a338",
+      "type":"debug",
+      "name":"debug",
+      "active":true,
+      "console":"false",
+      "complete":"true",
+      "x":915,
+      "y":155,
+      "z":"37826de5.a2113a",
+      "wires":[
+
+      ]
+   },
+   {
+      "id":"937a1503.73c418",
+      "type":"function",
+      "name":"Parse Out Twitter Handle",
+      "func":"var handle = {\n    payload: msg.tweet.user.screen_name };\n    \ncontext.global.handle = handle;\nreturn handle;",
+      "outputs":1,
+      "noerr":0,
+      "x":200,
+      "y":204,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "ee089087.053a4"
+         ]
+      ]
+   },
+   {
+      "id":"2d60f34.dad640c",
+      "type":"function",
+      "name":"Grab Biggest of Big 5",
+      "func":"var big1num = msg.insights.children[0].children[0].children[0].percentage;\nvar big2num = msg.insights.children[0].children[0].children[1].percentage;\nvar big3num = msg.insights.children[0].children[0].children[2].percentage;\nvar big4num = msg.insights.children[0].children[0].children[3].percentage;\nvar big5num = msg.insights.children[0].children[0].children[4].percentage;\n\nvar biggest5 = Math.max(big1num,big2num,big3num,big4num,big5num);\n\nswitch (biggest5){\n    case big1num:\n        big5 = msg.insights.children[0].children[0].children[0].name;\n        percentage = big1num;\n        break;\n    case big2num:\n        big5 = msg.insights.children[0].children[0].children[1].name;\n        percentage = big2num;\n        break;\n    case big3num:\n        big5 = msg.insights.children[0].children[0].children[2].name;\n        percentage = big3num;\n        break;\n    case big4num:\n        big5 = msg.insights.children[0].children[0].children[3].name;\n        percentage = big4num;\n        break;\n    case big5num:\n        big5 = msg.insights.children[0].children[0].children[4].name;\n        percentage = big5num;\n        break;\n    }\n\n//Convert Emotional Range for Neuroticism\nif (big5 ===\"Emotional range\"){\n    big5 = \"Emotional Range\"\n    }\n\n//Convert percentage to an actual percent\nvar percentage = Math.floor(percentage * 100) + '%';\n\nvar insights =  {trait: big5, percentage: percentage, handle: context.global.handle.payload};\n\nreturn insights;",
+      "outputs":1,
+      "noerr":0,
+      "x":823,
+      "y":289,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "1abf1637.7fe1d2"
+         ]
+      ]
+   },
+   {
+      "id":"1abf1637.7fe1d2",
+      "type":"template",
+      "name":"Tweet Body",
+      "field":"payload",
+      "format":"handlebars",
+      "template":"Hey @{{handle}}! Your top Big 5 Trait is {{trait}} at {{percentage}} Read more: http://tweetmewatson.mybluemix.net?user={{handle}} #watson",
+      "x":868,
+      "y":401,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "922a3ffb.24c7a8"
+         ]
+      ]
+   },
+   {
+      "id":"f444cb6b.53e0a8",
+      "type":"twitter in",
+      "twitter":"",
+      "tags":"@WhatsMyBig5 #tweetmeWatson",
+      "user":"false",
+      "name":"Tweet Mention",
+      "topic":"tweets",
+      "x":123,
+      "y":69,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "937a1503.73c418"
+         ]
+      ]
+   },
+   {
+      "id":"922a3ffb.24c7a8",
+      "type":"twitter out",
+      "twitter":"",
+      "name":"Tweet Reply",
+      "x":1001,
+      "y":519,
+      "z":"37826de5.a2113a",
+      "wires":[
+
+      ]
+   },
+   {
+      "id":"cf736aae.3894e",
+      "type":"switch",
+      "name":"Number of Tweets",
+      "property":"payload.number",
+      "rules":[
+         {
+            "t":"gt",
+            "v":"75"
+         },
+         {
+            "t":"lt",
+            "v":"75"
+         }
+      ],
+      "checkall":"false",
+      "outputs":2,
+      "x":397,
+      "y":405,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "b74f0852.7b5958"
+         ],
+         [
+            "4fc47c32.9d7474"
+         ]
+      ]
+   },
+   {
+      "id":"4fc47c32.9d7474",
+      "type":"template",
+      "name":"Not Enough Tweets",
+      "field":"payload",
+      "format":"handlebars",
+      "template":"@{{usr}}, you don't have enough Tweets for Watson to analyze.  Tweet some more and ask me again!",
+      "x":706,
+      "y":479,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "922a3ffb.24c7a8"
+         ]
+      ]
+   },
+   {
+      "id":"b74f0852.7b5958",
+      "type":"function",
+      "name":"Convert Payload for Watson",
+      "func":"tweets = msg.payload.feed;\n\nnode.send({payload:tweets});\n",
+      "outputs":1,
+      "noerr":0,
+      "x":514,
+      "y":279,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "52f1ba21.e96e2c"
+         ]
+      ]
+   },
+   {
+      "id":"52f1ba21.e96e2c",
+      "type":"watson-personality-insights",
+      "name":"Watson Personality Insights",
+      "x":711,
+      "y":206,
+      "z":"37826de5.a2113a",
+      "wires":[
+         [
+            "2d60f34.dad640c",
+            "4cc2c881.b2a338"
+         ]
+      ]
+   }
+]

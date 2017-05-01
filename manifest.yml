@@ -1,0 +1,11 @@
+applications:
+- services:
+  - tweetmewatson-PersonalityInsights
+  disk_quota: 1024M
+  host: tweets-analysis
+  name: tweets-analysis
+  command: node app.js
+  path: .
+  domain: mybluemix.net
+  instances: 1
+  memory: 512M

@@ -1,0 +1,29 @@
+//- layout.jade
+doctype html
+html(lang='en')
+  head
+    block title
+      title Tweet Me Watson | What Does Your Twitter Feed Say About You?
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    link(rel='shortcut icon', href='/images/favicon.ico', type='image/x-icon')
+    link(rel='icon', href='/images/favicon.ico', type='image/x-icon')
+    link(rel='stylesheet', href='/css/watson-bootstrap-dark.css')
+    link(rel='stylesheet', href='/css/style.css')
+  body
+
+    div.container
+      div.row
+        div.col-lg-12
+          div.row.top-nav
+            div.col-lg-12                   
+      block row-content
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/tone/0.10.0/Tone.js')
+    script(type='text/javascript', src='/js/jquery-1.11.1.min.js')
+    script(type='text/javascript', src='/js/d3.v2.min.js')
+    script(type='text/javascript', src='/js/demo.js')
+    script(type='text/javascript', src='/js/personality.js')
+    script(type='text/javascript', src='/js/textsummary.js')
+    script(type='text/javascript', src='/js/script.js')
