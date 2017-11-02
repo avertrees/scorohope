@@ -76,12 +76,34 @@ var synth = new Tone.MembraneSynth({
 				n = Math.floor(Math.random() * p.length);
 				};
 			}
+			 $(document).ready(function(){
+		        $("body").append("<div id='print-cont'></div>");
+		        $("#print-cont").html($("#personality-hdr").text() + "<br>" + "**************************" + "<br>" + $(".summary-div").text());
+		        $("#print-cont").css({
+			      "color": "black",
+			      "font-size": "10px"
+			    });
+		      });
+
+		      //printing function
+		      $.fn.extend({
+		          print: function() {
+		              var frameName = 'printIframe';
+		              var doc = window.frames[frameName];
+		              if (!doc) {
+		                  $('<iframe>').hide().attr('name', frameName).appendTo(document.body);
+		                  doc = window.frames[frameName];
+		              }
+		          doc.document.body.innerHTML = this.html();
+		          doc.window.print();
+		          return this;
+		        }
+		      });
 			setInterval(update,1000/60)
-    return;
+    		return;
   }
-
-
 }
+
 
 
 

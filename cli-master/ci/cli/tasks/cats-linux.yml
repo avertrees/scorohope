@@ -1,0 +1,59 @@
+---
+platform: linux
+image: docker:///cloudfoundry/cli-ci
+
+inputs:
+- name: cf-acceptance-tests
+  path: gopath/src/github.com/cloudfoundry/cf-acceptance-tests
+- name: cf-cli-binaries
+- name: bosh-lite-lock
+- name: cats-config
+
+params:
+  BACKEND:
+  NODES: 2
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -eux
+
+    export GOPATH="${PWD}/gopath"
+    export PATH="${GOPATH}/bin":${PATH}
+    export CF_DIAL_TIMEOUT=15
+    export CONFIG=$PWD/cats-config/integration_config.json
+
+    mkdir -p $GOPATH/bin
+    pushd cf-cli-binaries
+      tar xvf cf-cli-binaries.tgz
+      chmod +x cf-cli_linux_x86-64
+      ln -s $PWD/cf-cli_linux_x86-64 $GOPATH/bin/cf
+    popd
+
+    cd "${GOPATH}/src/github.com/cloudfoundry/cf-acceptance-tests"
+
+    # Redact passwords in output
+    sed -E 's/(.*(admin_password|existing_user_password).*\:)(.*)/\1 [REDACTED]/' $CONFIG
+
+    if [[ "$BACKEND" = "diego" ]]; then
+      api=$(jq .api -r < $CONFIG)
+      user=$(jq .admin_user -r < $CONFIG)
+      password=$(jq .admin_password -r < $CONFIG)
+      cf api ${api} --skip-ssl-validation
+      cf auth ${user} ${password}
+      cf enable-feature-flag diego_docker
+    fi
+
+    SKIPS="-skip="
+    [[ "$BACKEND" = "diego" ]] && SKIPS="${SKIPS}NO_DIEGO_SUPPORT|"
+    SKIPS="${SKIPS}transparently proxies both reserved|"
+
+    # Remove trailing |
+    SKIPS=$(echo $SKIPS | sed -E 's/(.*)(\|)/\1/')
+
+    ./bin/test \
+      -flakeAttempts=2 -slowSpecThreshold=120 -randomizeAllSpecs \
+      -nodes "${NODES}" \
+      "${SKIPS}"

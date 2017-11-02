@@ -420,6 +420,7 @@ var renderChart = function() {
             .attr('dy', dy_init)
             .attr('class', 'sector_leaf_text')
             .attr('font-size', lable_size)
+            .attr("fill", "white")            
             .attr('text-anchor', lbl_anchor)
             .attr('transform', 'translate(' + (out_r + 5) * Math.sin(d.x) + ',' + (-(out_r + 5) * Math.cos(d.x)) + ') ' + 'rotate(' + rotate + ')')
             .text(label);
@@ -462,6 +463,7 @@ var renderChart = function() {
             .attr('class', 'sector_nonleaf_text')
             .append('textPath')
             .attr('class', 'sector_label_path')
+            .attr("fill", "white")
             .attr('position-in-sector', d.depth <= 1 ? 'center' : (bottom ? 'inner' : 'outer')) // Since both text lines share the same 'd', this class annotation tells where is the text, helping to determine the real arc length
             .attr('font-size', function(d) {
               return 30 / Math.sqrt(d.depth + 1);
@@ -497,6 +499,7 @@ var renderChart = function() {
               //.attr('fill', d3.rgb(arc1color).darker(2))
               .append('textPath')
               .attr('class', 'sector_label_number_path')
+              .attr("fill", "white")
               .attr('position-in-sector', bottom ? 'outer' : 'inner') // Since both text lines share the same 'd', this class annotation tells where is the text, helping to determine the real arc length
               .attr('font-size', function(d) {
                 return 10;
@@ -541,7 +544,7 @@ var renderChart = function() {
           new_font_size = max_font_size_base / (0.4 * d.depth + 0.6);
         }
 
-        d3.select(this).attr('font-size', new_font_size);
+        d3.select(this).attr('font-size', new_font_size).attr("fill", "white")
         //set new offset:
         d3.select(this).attr('startOffset', (sector_length - curNd.getComputedTextLength()) / 2);
       }

@@ -111,3 +111,79 @@
         height: 100%;
     }
 }
+
+
+/*CUSTOM*/
+
+body{
+  background-color: black !important;
+  color:white;
+}
+.top-nav{
+  display: none;
+}
+span{
+  color: white;
+}
+input{
+  color:#00b2ef;
+}
+em{
+  color: white;
+}
+.well{
+  background-color: black;
+  border:1px solid #00b2ef;
+}
+
+.theader {
+    background-color: #00b2ef;
+}
+#model-template{
+    background-color: #00b2ef;
+}
+.col-lg-12{
+  padding: 0px;
+}
+
+.print-btn {
+  display: block;
+  border-radius: 4px;
+  background-color: #00b2ef;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 24px;
+  padding: 10px;
+  width: 340px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 0 auto;
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+
+.print-btn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.print-btn span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.print-btn:hover span {
+  padding-right: 25px;
+}
+
+.print-btn:hover span:after {
+  opacity: 1;
+  right: 0;
+}
